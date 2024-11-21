@@ -16,14 +16,23 @@ OBJ_BNS = $(SRC_BNS:.c=.o)
 
 DEP = $(SRC_BNS:.c=.d)
 
+MODE ?=
+MODETRACE = .mt
+LASTMODE = $(shell cat $(MODETRACE) 2>/dev/null)
+
 CC = cc
 CPPFLAGS = -MMD -MP
 CFLAGS = -Wall -Werror -Wextra
 
+ifneq ($(MODE), $(LASTMODE))
+$(NAME): force
+endif
+
 all : $(NAME)
 
 $(NAME) : $(OBJ)
-	ar -rcs $@ $^
+	echo $(MODE) > $(MODETRACE)
+	ar -rcs $@ $(OBJ)
 
 %.o: %.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
@@ -31,7 +40,7 @@ $(NAME) : $(OBJ)
 -include $(DEP)
 
 bonus :
-	$(MAKE) SRC="$(SRC_BNS)"
+	$(MAKE) SRC="$(SRC_BNS)" MODE=$@
 
 clean :
 	rm -f $(OBJ_BNS) $(DEP)
@@ -39,6 +48,8 @@ clean :
 fclean : clean
 	rm -f $(NAME)
 
+force:
+
 re : fclean all
 
-.PHONY: bonus all clean fclean re
+.PHONY: bonus all clean fclean re force
