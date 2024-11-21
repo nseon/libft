@@ -6,7 +6,7 @@
 /*   By: nseon <nseon@student.42lyon.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 17:38:43 by nseon             #+#    #+#             */
-/*   Updated: 2024/11/14 14:43:35 by nseon            ###   ########.fr       */
+/*   Updated: 2024/11/21 11:11:08 by nseon            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	*ft_calloc(size_t nmemb, size_t size)
 	size_t			i;
 
 	i = 0;
-	if (size * nmemb > INT_MAX)
+	if (size != 0 && nmemb > INT_MAX / size)
 		return (0);
 	tab = malloc(nmemb * size);
 	if (tab == NULL)
