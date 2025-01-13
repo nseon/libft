@@ -6,7 +6,7 @@
 #    By: nseon <nseon@student.42lyon.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/01/08 10:00:18 by nseon             #+#    #+#              #
-#    Updated: 2025/01/13 15:08:55 by nseon            ###   ########.fr        #
+#    Updated: 2025/01/13 15:13:21 by nseon            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -127,6 +127,7 @@ $(NAME) : $(OBJ)
 	ar -rcs $@ $^
 
 $(MAKE_DIR)%.o: $(SRC_DIR)%.c
+	@mkdir -p $(@D)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 -include $(DEP)
@@ -135,10 +136,10 @@ bonus :
 	$(MAKE) SRC="$(SRC_BNS)"
 
 clean :
-	rm -f $(OBJ) $(OBJ_BNS) $(DEP)
+	rm -rf $(MAKE_DIR)
 
 fclean : clean
-	rm -f $(NAME)
+	rm -rf $(NAME)
 
 re : fclean all
 
