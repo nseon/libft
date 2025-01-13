@@ -1,55 +1,145 @@
-NAME = libft.a
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: nseon <nseon@student.42lyon.fr>            +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/01/08 10:00:18 by nseon             #+#    #+#              #
+#    Updated: 2025/01/13 15:08:55 by nseon            ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
-SRC = ft_isalpha.c ft_isdigit.c ft_isalnum.c ft_isascii.c ft_isprint.c ft_strlen.c \
-ft_memset.c ft_bzero.c ft_memcpy.c ft_memmove.c ft_strlcpy.c ft_strlcat.c ft_toupper.c \
-ft_tolower.c ft_strchr.c ft_strrchr.c ft_strncmp.c ft_memchr.c ft_memcmp.c \
-ft_strnstr.c ft_atoi.c ft_calloc.c ft_strdup.c ft_substr.c ft_strjoin.c ft_strtrim.c \
-ft_split.c ft_itoa.c ft_strmapi.c ft_striteri.c ft_putchar_fd.c \
-ft_putstr_fd.c ft_putendl_fd.c ft_putnbr_fd.c
+NAME 		=	libft.a
 
-SRC_BNS = $(SRC) ft_lstnew_bonus.c ft_lstadd_front_bonus.c ft_lstsize_bonus.c \
-ft_lstlast_bonus.c ft_lstadd_back_bonus.c ft_lstdelone_bonus.c ft_lstclear_bonus.c \
-ft_lstiter_bonus.c ft_lstmap_bonus.c
+# ---------------FILES--------------- #
 
-OBJ = $(SRC:.c=.o)
-OBJ_BNS = $(SRC_BNS:.c=.o)
+MAKE_DIR	=	.make/
 
-DEP = $(SRC_BNS:.c=.d)
+SRC_DIR		=	src/
 
-MODE ?=
-MODETRACE = .mt
-LASTMODE = $(shell cat $(MODETRACE) 2>/dev/null)
+OBJ			=	$(patsubst %.c, $(MAKE_DIR)%.o, $(SRC))
 
-CC = cc
-CPPFLAGS = -MMD -MP
-CFLAGS = -Wall -Werror -Wextra
+DEP			=	$(patsubst %.c, $(MAKE_DIR)%.d, $(SRC))
 
-ifneq ($(MODE), $(LASTMODE))
-$(NAME): force
-endif
+# ---------------CHAR---------------- #
+
+SRC			=	$(addprefix $(CHAR_DIR), $(CHAR_SRC))
+
+CHAR_DIR	=	char/
+
+CHAR_SRC	=	ft_isalpha.c\
+				ft_isdigit.c\
+				ft_isalnum.c\
+				ft_isascii.c\
+				ft_isprint.c
+
+# ----------------STR--------------- #
+
+SRC			+=	$(addprefix $(STR_DIR), $(STR_SRC))
+
+STR_DIR	=	str/
+
+STR_SRC	=	ft_strjoin.c\
+			ft_atoi.c\
+			ft_split.c\
+			ft_itoa.c\
+			ft_strmapi.c\
+			ft_strlcpy.c\
+			ft_strlcat.c\
+			ft_striteri.c\
+			ft_strlen.c\
+			ft_strchr.c\
+			ft_strrchr.c\
+			ft_strncmp.c\
+			ft_strdup.c\
+			ft_strnstr.c\
+			ft_substr.c\
+			ft_strtrim.c
+
+# ---------------MEMORY-------------- #
+
+SRC			+=	$(addprefix $(MEM_DIR), $(MEM_SRC))
+
+MEM_DIR		=	memory/
+
+MEM_SRC		=	ft_memset.c\
+				ft_bzero.c\
+				ft_memcpy.c\
+				ft_memmove.c\
+				ft_memchr.c\
+				ft_memcmp.c\
+				ft_calloc.c
+
+# ----------------PUT---------------- #
+
+SRC			+=	$(addprefix $(PUT_DIR), $(PUT_SRC))
+
+PUT_DIR		=	put/
+
+PUT_SRC		=	ft_putchar_fd.c\
+				ft_putstr_fd.c\
+				ft_putendl_fd.c\
+				ft_putnbr_fd.c
+
+# ---------------LIST---------------- #
+
+SRC			+=	$(addprefix $(LST_DIR), $(LST_SRC))
+
+LST_DIR		=	list/
+
+LST_SRC		=	ft_lstnew_bonus.c\
+				ft_lstadd_front_bonus.c\
+				ft_lstsize_bonus.c\
+				ft_lstlast_bonus.c\
+				ft_lstadd_back_bonus.c\
+				ft_lstdelone_bonus.c\
+				ft_lstclear_bonus.c\
+				ft_lstiter_bonus.c\
+				ft_lstmap_bonus.c
+
+
+# -----------LIBS / INCLUDES--------- #
+
+LIB_DIR 	=
+LIB_PATH	=
+LIB_PATH	:=	$(addprefix $(LIB_DIR), $(LIB_PATH))
+LIB			=	$(patsubst lib%a, %, $(notdir $(LIBS_PATH)))
+
+INC_DIR 	=	includes/
+INCLUDES	=	$(INC_DIR)\
+				$(addprefix $(dir $(LIB_PATH)), $(INC_DIR))
+
+# --------------CONFIGS-------------- #
+
+CC			=	cc
+CFLAGS		=	-Wall -Wextra -Werror
+CPPFLAGS	=	-MMD -MP $(addprefix -I, $(INCLUDES))
+
+LDFLAGS		+=	$(addprefix -L, $(dir $(LIB_PATH)))
+LDLIBS		+=	$(addprefix -l, $(LIB))
+
+# --------------TARGETS-------------- #
 
 all : $(NAME)
 
 $(NAME) : $(OBJ)
-	echo $(MODE) > $(MODETRACE)
-	ar -rcs $@ $(OBJ)
+	ar -rcs $@ $^
 
-%.o: %.c
+$(MAKE_DIR)%.o: $(SRC_DIR)%.c
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 -include $(DEP)
 
 bonus :
-	$(MAKE) SRC="$(SRC_BNS)" MODE=$@
+	$(MAKE) SRC="$(SRC_BNS)"
 
 clean :
-	rm -f $(OBJ_BNS) $(DEP)
+	rm -f $(OBJ) $(OBJ_BNS) $(DEP)
 
 fclean : clean
 	rm -f $(NAME)
 
-force:
-
 re : fclean all
 
-.PHONY: bonus all clean fclean re force
+.PHONY: all clean fclean re
